@@ -29,7 +29,7 @@ class BlitzServer {
       }
     });
   }
-  test() {
+  getTestingServer() {
     const requestHandler = new RequestHandler(this.routers, this.mode);
     const hserv = http.createServer();
     hserv.addListener("request", (rq, rs) => requestHandler.handle(rq, rs));

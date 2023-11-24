@@ -9,4 +9,4 @@ app.request("GET::/app", (req, res) => {
   });
 });
 
-export const testServer = app.test();
+export const testServer = app.getTestingServer();
