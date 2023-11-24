@@ -19,7 +19,7 @@ class BlitzServer {
     const requestHandler = new RequestHandler(this.routers, this.mode);
     const hserv = http.createServer();
     hserv.addListener("request", (rq, rs) => requestHandler.handle(rq, rs));
-    return hserv.listen(port, () => {
+    hserv.listen(port, () => {
       console.log(
         `Blitz server is running on port http://localhost:${port} (Ctrl + C to exit process)`
       );
@@ -28,6 +28,12 @@ class BlitzServer {
         onListen();
       }
     });
+  }
+  test() {
+    const requestHandler = new RequestHandler(this.routers, this.mode);
+    const hserv = http.createServer();
+    hserv.addListener("request", (rq, rs) => requestHandler.handle(rq, rs));
+    return hserv;
   }
   jsonify() {
     this.mode = ServerModes.JSONIFY;

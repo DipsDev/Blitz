@@ -1,4 +1,5 @@
 import blitz from "../server";
+import http from "http";
 
 const app = blitz();
 
@@ -8,4 +9,4 @@ app.request("GET::/app", (req, res) => {
   });
 });
 
-export const testServer = app.listen(3000);
+export const testServer = app.test();
