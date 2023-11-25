@@ -39,8 +39,12 @@ class BlitzServer {
     this.mode = ServerModes.JSONIFY;
     return this;
   }
-  async request(method: string, handler: RouteHandler) {
-    this.routers[method] = handler;
+  async get(route: string, handler: RouteHandler) {
+    this.routers[`GET::${route}`] = handler;
+  }
+
+  async post(route: string, handler: RouteHandler) {
+    this.routers[`POST::${route}`] = handler;
   }
 }
 
