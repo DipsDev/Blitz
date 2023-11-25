@@ -10,7 +10,7 @@ app.get("/hello", (req, res) => {
 
 app.get("/static/hello", (req, res) => {
   return res.view("index", {
-    url: req.url as string,
+    bestFramework: "blitz",
   }); // Automatic Load from /static/
 });
 

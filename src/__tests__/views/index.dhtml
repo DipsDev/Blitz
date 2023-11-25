@@ -6,6 +6,6 @@
     <title>My Favorite Website!</title>
   </head>
   <body>
-    <h1>Hello, You Are From: ::url</h1>
+    <h1>The best framework is: ::bestFramework</h1>
   </body>
 </html>
