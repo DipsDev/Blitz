@@ -16,7 +16,7 @@ export class RequestHandler {
 
   private formatIncomingMessage(req: IncomingMessage) {
     if (req.url?.endsWith("/")) {
-      return `${req.method}::${req.url.substring(0, req.url.length - 2)}`;
+      return `${req.method}::${req.url.substring(0, req.url.length - 1)}`;
     }
     return `${req.method}::${req.url}`;
   }
