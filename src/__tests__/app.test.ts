@@ -8,4 +8,8 @@ describe("Simple http requests", () => {
       .expect("Content-Type", /json/)
       .expect(200, done);
   });
+
+  it("Should work with ending /", (done) => {
+    request(testServer).get("/hello/").expect(200, done);
+  });
 });
