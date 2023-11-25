@@ -13,8 +13,16 @@ export class RequestHandler {
     this.routers = routers;
     this.mode = mode;
   }
+
+  private formatIncomingMessage(req: IncomingMessage) {
+    if (req.url?.endsWith("/")) {
+      return `${req.method}::${req.url.substring(0, req.url.length - 2)}`;
+    }
+    return `${req.method}::${req.url}`;
+  }
+
   handle(req: IncomingMessage, res: OutgoingResponse) {
-    const formmatted = `${req.method}::${req.url}`;
+    const formmatted = this.formatIncomingMessage(req);
     if (formmatted in this.routers) {
       if (this.mode === ServerModes.JSONIFY) {
         // Return json as default
