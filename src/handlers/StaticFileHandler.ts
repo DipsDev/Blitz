@@ -9,7 +9,7 @@ export class StaticFileHandler {
     if (!path.extname(filename)) {
       filename += ".dhtml";
     }
-    const filePath = path.join(require.main?.filename, "../static/", filename);
+    const filePath = path.join(require.main?.filename, "../views/", filename);
     const file = fs.readFileSync(filePath);
 
     if (

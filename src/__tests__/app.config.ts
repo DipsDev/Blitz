@@ -10,7 +10,7 @@ app.get("/hello", (req, res) => {
 
 app.get("/static/hello", (req, res) => {
   return res.view("index", {
-    name: "Geva",
+    url: req.url as string,
   }); // Automatic Load from /static/
 });
 
