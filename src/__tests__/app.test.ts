@@ -14,6 +14,6 @@ describe("Simple http requests", () => {
   });
 
   it("Should display html file", (done) => {
-    request(testServer).get("/static/hello").expect("").expect(200, done);
+    request(testServer).get("/static/hello").expect(200, done);
   });
 });

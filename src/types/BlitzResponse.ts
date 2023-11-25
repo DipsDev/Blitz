@@ -1,5 +1,6 @@
 import { IncomingMessage, ServerResponse } from "http";
 import fs from "node:fs";
+import path from "path";
 
 export default class BlitzResponse<
   Request extends IncomingMessage = IncomingMessage
@@ -21,7 +22,11 @@ export default class BlitzResponse<
     return this;
   }
   view(filename: string) {
-    const file = fs.readFileSync(filename);
+    if (!require.main?.filename) {
+      return this.end("Unexpected Error");
+    }
+    const filePath = path.join(require.main?.filename, "../static/", filename);
+    const file = fs.readFileSync(filePath);
     return this.end(file);
   }
 }
