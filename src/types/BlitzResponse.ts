@@ -1,4 +1,5 @@
 import { IncomingMessage, ServerResponse } from "http";
+import fs from "node:fs";
 
 export default class BlitzResponse<
   Request extends IncomingMessage = IncomingMessage
@@ -18,5 +19,9 @@ export default class BlitzResponse<
     // Set the status code of the response
     this.statusCode = statusCode;
     return this;
+  }
+  view(filename: string) {
+    const file = fs.readFileSync(filename);
+    return this.end(file);
   }
 }

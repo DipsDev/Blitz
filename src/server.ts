@@ -1,7 +1,6 @@
 import http from "http";
 import BlitzResponse from "./types/BlitzResponse";
-import { RequestHandler } from "./lib/RequestHandler";
-
+import { RequestHandler } from "./handlers/RequestHandler";
 export type RouteHandler = (
   req: http.IncomingMessage,
   res: BlitzResponse
@@ -17,6 +16,7 @@ class BlitzServer {
   private mode: ServerModes = ServerModes.NORMAL;
   async listen(port: number, onListen?: () => void) {
     const requestHandler = new RequestHandler(this.routers, this.mode);
+
     const hserv = http.createServer();
     hserv.addListener("request", (rq, rs) => requestHandler.handle(rq, rs));
     hserv.listen(port, () => {

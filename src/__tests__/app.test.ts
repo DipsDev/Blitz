@@ -12,4 +12,8 @@ describe("Simple http requests", () => {
   it("Should work with ending /", (done) => {
     request(testServer).get("/hello/").expect(200, done);
   });
+
+  it("Should display html file", (done) => {
+    request(testServer).get("/static/hello").expect("").expect(200, done);
+  });
 });
