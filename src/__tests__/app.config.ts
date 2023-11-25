@@ -9,9 +9,11 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/static/hello", (req, res) => {
-  return res.view("index.html"); // Automatic Load from /static/
+  return res.view("index", {
+    name: "Geva",
+  }); // Automatic Load from /static/
 });
 
-// app.listen(3000);
+app.listen(3000);
 
-export const testServer = app.getTestingServer();
+// export const testServer = app.getTestingServer();

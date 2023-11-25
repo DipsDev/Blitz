@@ -22,12 +22,11 @@ export default class BlitzResponse<
     this.statusCode = statusCode;
     return this;
   }
-  view(filename: string) {
+  view(filename: string, data?: Record<string, string>) {
     const fileHandler = new StaticFileHandler();
     if (!require.main?.filename) {
       return this.end("Unexpected Error");
     }
-
-    return this.end(fileHandler.renderFileContent(filename));
+    return this.end(fileHandler.renderFileContent(filename, data));
   }
 }
