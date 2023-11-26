@@ -2,29 +2,30 @@ import type { ServerResponse, IncomingMessage } from "http";
 import { RouteHandler, ServerModes } from "../server";
 import BlitzResponse from "../types/BlitzResponse";
 import { StaticFileHandler } from "./StaticFileHandler";
+import { RouteTrie } from "../types/RouteTrie";
 
 type OutgoingResponse = ServerResponse<IncomingMessage> & {
   req: IncomingMessage;
 };
 
 export class RequestHandler {
-  routers: Record<string, RouteHandler>; // GET:Hello
-  mode: ServerModes;
-  constructor(routers: Record<string, RouteHandler>, mode: ServerModes) {
+  private routers: Record<string, RouteHandler>; // GET:Hello
+  private mode: ServerModes;
+  private routerTree: RouteTrie;
+  constructor(
+    routers: Record<string, RouteHandler>,
+    routerTree: RouteTrie,
+    mode: ServerModes
+  ) {
     this.routers = routers;
     this.mode = mode;
-  }
-
-  private formatIncomingMessage(req: IncomingMessage) {
-    if (req.url?.endsWith("/")) {
-      return `${req.method}::${req.url.substring(0, req.url.length - 1)}`;
-    }
-    return `${req.method}::${req.url}`;
+    this.routerTree = routerTree;
   }
 
   handle(req: IncomingMessage, res: OutgoingResponse) {
-    const formmatted = this.formatIncomingMessage(req);
-    if (formmatted in this.routers) {
+    const route = this.routerTree.fetchRoute(req.url as string);
+    const formmatted = `${req.method}::${route.path}`;
+    if (route.found) {
       if (this.mode === ServerModes.JSONIFY) {
         // Return json as default
         const json = JSON.stringify(

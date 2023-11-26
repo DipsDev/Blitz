@@ -10,6 +10,7 @@
 interface FetchedRoute {
   path: string;
   params: string[];
+  found: boolean;
 }
 
 class RouteNode {
@@ -26,14 +27,17 @@ export class RouteTrie {
   constructor() {
     this.head = new RouteNode();
   }
-  private removeStartingSlash(path: string) {
+  private removeSlashes(path: string) {
     if (path[0] === "/") {
-      return path.substring(1);
+      path = path.substring(1);
+    }
+    if (path[path.length - 1] === "/") {
+      path = path.substring(0, path.length - 1);
     }
     return path;
   }
   addRoute(path: string) {
-    path = this.removeStartingSlash(path);
+    path = this.removeSlashes(path);
     const splittedPath = path.split("/").reverse();
     let node = this.head;
     while (splittedPath.length > 0) {
@@ -46,7 +50,7 @@ export class RouteTrie {
     node.endOfRoute = true;
   }
   fetchRoute(path: string): FetchedRoute {
-    path = this.removeStartingSlash(path);
+    path = this.removeSlashes(path);
     const splittedPath = path.split("/");
     splittedPath.reverse();
     let node = this.head;
@@ -61,6 +65,7 @@ export class RouteTrie {
           return {
             path: "",
             params: [],
+            found: false,
           };
         }
         params.push(curr);
@@ -73,15 +78,17 @@ export class RouteTrie {
       return {
         path: constructedPath,
         params,
+        found: true,
       };
     return {
       path: "",
       params: [],
+      found: false,
     };
   }
 
   routeExists(path: string): boolean {
-    path = this.removeStartingSlash(path);
+    path = this.removeSlashes(path);
     const splittedPath = path.split("/");
     splittedPath.reverse();
     let node = this.head;

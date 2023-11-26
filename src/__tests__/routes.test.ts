@@ -16,6 +16,9 @@ describe("Route Trie Should Work", () => {
 
     // checking middle of route
     expect(trie.routeExists("/a")).toBeFalsy();
+
+    // should handle ending /
+    expect(trie.routeExists("/a/b/")).toBeTruthy();
   });
   it("Should be able to find with asteriks", () => {
     trie.addRoute("/b/*");
@@ -26,6 +29,7 @@ describe("Route Trie Should Work", () => {
     expect(trie.fetchRoute("/b/a")).toEqual({
       path: "/b/*",
       params: ["a"],
+      found: true,
     });
 
     // check if fetch route returns empty string of not found
@@ -33,6 +37,7 @@ describe("Route Trie Should Work", () => {
     expect(trie.fetchRoute("/b")).toEqual({
       path: "",
       params: [],
+      found: false,
     });
   });
   it("Should be able to find with placeholders and non placeholders", () => {
@@ -46,12 +51,14 @@ describe("Route Trie Should Work", () => {
     expect(trie.fetchRoute("/b/abc")).toEqual({
       path: "",
       params: [],
+      found: false,
     });
 
     // check if middle placeholders are caught correctly in fetchRoute
     expect(trie.fetchRoute("/b/abc/a")).toEqual({
       path: "/b/*/a",
       params: ["abc"],
+      found: true,
     });
   });
   it("Should work with multi placeholders", () => {
@@ -63,14 +70,17 @@ describe("Route Trie Should Work", () => {
     expect(trie.fetchRoute("/b/abc/abc/a")).toEqual({
       path: "/b/*/*/a",
       params: ["abc", "abc"],
+      found: true,
     });
   });
   it("Should work with special edge cases", () => {
     trie.addRoute("/a/*/b");
+    trie.addRoute("/a/*/b"); // Shouldn't do any thing!
 
     expect(trie.routeExists("/a/b")).toBeFalsy();
     expect(trie.fetchRoute("/a/b")).toEqual({
       path: "",
+      found: false,
       params: [],
     });
   });

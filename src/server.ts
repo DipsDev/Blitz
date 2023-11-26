@@ -1,6 +1,7 @@
 import http from "http";
 import BlitzResponse from "./types/BlitzResponse";
 import { RequestHandler } from "./handlers/RequestHandler";
+import { RouteTrie } from "./types/RouteTrie";
 export type RouteHandler = (
   req: http.IncomingMessage,
   res: BlitzResponse
@@ -13,9 +14,14 @@ export enum ServerModes {
 
 class BlitzServer {
   private routers: Record<string, RouteHandler> = {}; // GET:Hello
+  private routeTree = new RouteTrie();
   private mode: ServerModes = ServerModes.NORMAL;
   async listen(port: number, onListen?: () => void) {
-    const requestHandler = new RequestHandler(this.routers, this.mode);
+    const requestHandler = new RequestHandler(
+      this.routers,
+      this.routeTree,
+      this.mode
+    );
 
     const hserv = http.createServer();
     hserv.addListener("request", (rq, rs) => requestHandler.handle(rq, rs));
@@ -30,7 +36,11 @@ class BlitzServer {
     });
   }
   getTestingServer() {
-    const requestHandler = new RequestHandler(this.routers, this.mode);
+    const requestHandler = new RequestHandler(
+      this.routers,
+      this.routeTree,
+      this.mode
+    );
     const hserv = http.createServer();
     hserv.addListener("request", (rq, rs) => requestHandler.handle(rq, rs));
     return hserv;
@@ -41,10 +51,12 @@ class BlitzServer {
   }
   async get(route: string, handler: RouteHandler) {
     this.routers[`GET::${route}`] = handler;
+    this.routeTree.addRoute(route);
   }
 
   async post(route: string, handler: RouteHandler) {
     this.routers[`POST::${route}`] = handler;
+    this.routeTree.addRoute(route);
   }
 }
 
