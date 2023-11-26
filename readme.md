@@ -49,6 +49,22 @@ Blitz supports dynamic templates with the extension `dhtml`.
 
 where `::bestFramework` will be changed to "blitz".
 
+Blitz now supports dynamic path parameters!
+The following path will be mapped to `/firstparam/secondparam/abc`
+you can access those paramaters through `req.params`
+NOTE: The params aren't sanitised, so use them wisely ( will change soon )
+
+```js
+app.get("/*/*/abc", (req, res) => {
+  // You can access the params with `req.params` array.
+  // And even render a view with them!
+  return res.view("params", {
+    first: req.params[0],
+    second: req.params[1],
+  });
+});
+```
+
 ## Upcoming Features
 
 - ~~Usage Section~~
