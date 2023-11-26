@@ -7,6 +7,11 @@
 
 */
 
+interface FetchedRoute {
+  path: string;
+  params?: string[];
+}
+
 class RouteNode {
   children: Record<string, RouteNode>;
   endOfRoute: boolean;
@@ -40,27 +45,34 @@ export class RouteTrie {
     }
     node.endOfRoute = true;
   }
-  fetchRoute(path: string) {
+  fetchRoute(path: string): FetchedRoute {
     path = this.removeStartingSlash(path);
     const splittedPath = path.split("/");
     splittedPath.reverse();
     let node = this.head;
 
     let constructedPath = "";
+    const params = [];
 
     while (splittedPath.length > 0) {
       let curr = splittedPath.pop() as string;
 
       if (!(curr in node.children)) {
         if (!("*" in node.children)) {
-          return "";
+          return {
+            path: "",
+          };
         }
+        params.push(curr);
         curr = "*";
       }
       constructedPath += `/${curr}`;
       node = node.children[curr];
     }
-    return constructedPath;
+    return {
+      path: constructedPath,
+      params,
+    };
   }
 
   routeExists(path: string): boolean {
