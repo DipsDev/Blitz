@@ -9,7 +9,7 @@
 
 interface FetchedRoute {
   path: string;
-  params?: string[];
+  params: string[];
 }
 
 class RouteNode {
@@ -56,7 +56,6 @@ export class RouteTrie {
 
     while (splittedPath.length > 0) {
       let curr = splittedPath.pop() as string;
-
       if (!(curr in node.children)) {
         if (!("*" in node.children)) {
           return {
@@ -70,9 +69,14 @@ export class RouteTrie {
       constructedPath += `/${curr}`;
       node = node.children[curr];
     }
+    if (node.endOfRoute)
+      return {
+        path: constructedPath,
+        params,
+      };
     return {
-      path: constructedPath,
-      params,
+      path: "",
+      params: [],
     };
   }
 

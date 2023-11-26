@@ -29,7 +29,8 @@ describe("Route Trie Should Work", () => {
     });
 
     // check if fetch route returns empty string of not found
-    expect(trie.fetchRoute("/bb")).toEqual({
+    // /b and /b/* consider different routes
+    expect(trie.fetchRoute("/b")).toEqual({
       path: "",
       params: [],
     });
@@ -39,6 +40,12 @@ describe("Route Trie Should Work", () => {
 
     // check if matches middle placeholders
     expect(trie.routeExists("/b/abc/a")).toBeTruthy();
+
+    expect(trie.routeExists("/b/abc")).toBeFalsy();
+    expect(trie.fetchRoute("/b/abc")).toEqual({
+      path: "",
+      params: [],
+    });
 
     // check if middle placeholders are caught correctly in fetchRoute
     expect(trie.fetchRoute("/b/abc/a")).toEqual({
