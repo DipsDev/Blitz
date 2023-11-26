@@ -11,9 +11,7 @@ app.get("/hello", (req, res) => {
 app.get("/static/hello", (req, res) => {
   return res.view("index", {
     bestFramework: "blitz",
-  }); // Automatic Load from /static/
+  }); // Automatic Load from /views/
 });
 
-app.listen(3000);
-
-// export const testServer = app.getTestingServer();
+export const testServer = app.getTestingServer();

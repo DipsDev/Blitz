@@ -1,6 +1,4 @@
 import { IncomingMessage, ServerResponse } from "http";
-import fs from "node:fs";
-import path from "path";
 import { StaticFileHandler } from "../handlers/StaticFileHandler";
 
 export default class BlitzResponse<
