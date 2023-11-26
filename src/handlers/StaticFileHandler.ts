@@ -37,7 +37,7 @@ export class StaticFileHandler {
   }
   private renderDynamicFileContent(file: Buffer, data: Record<string, string>) {
     const string = file.toString("utf-8");
-    const replacedHtml = string.replace(/(::*\S[^<!>/\\:]*)/g, function (m) {
+    const replacedHtml = string.replace(/(::[^</:\/ +-/!]*)/g, function (m) {
       if (m.replace("::", "") in data) {
         return data[m.replace("::", "")];
       }
