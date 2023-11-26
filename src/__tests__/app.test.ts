@@ -15,6 +15,12 @@ describe("Simple http requests", () => {
 
   it("Should display html file", (done) => {
     request(testServer).get("/static/hello").expect(/blitz/g).expect(200, done);
+    request(testServer)
+      .get("/a/b")
+      .expect(/\/*\/*/g)
+      .expect(/a/g)
+      .expect(/b/g)
+      .expect(200, done);
   });
   it("Should display 404 error", (done) => {
     request(testServer)

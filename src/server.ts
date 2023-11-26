@@ -2,10 +2,8 @@ import http from "http";
 import BlitzResponse from "./types/BlitzResponse";
 import { RequestHandler } from "./handlers/RequestHandler";
 import { RouteTrie } from "./types/RouteTrie";
-export type RouteHandler = (
-  req: http.IncomingMessage,
-  res: BlitzResponse
-) => any;
+import BlitzRequest from "./types/BlitzRequest";
+export type RouteHandler = (req: BlitzRequest, res: BlitzResponse) => any;
 
 export enum ServerModes {
   NORMAL,

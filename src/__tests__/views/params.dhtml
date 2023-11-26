@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Favorite Website!</title>
+  </head>
+  <body>
+    <h1>Your current strict path is ::path</h1>
+    <h2> ::first + ::second </h2>
+  </body>
+</html>

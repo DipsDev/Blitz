@@ -3,6 +3,7 @@ import { RouteHandler, ServerModes } from "../server";
 import BlitzResponse from "../types/BlitzResponse";
 import { StaticFileHandler } from "./StaticFileHandler";
 import { RouteTrie } from "../types/RouteTrie";
+import BlitzRequest from "../types/BlitzRequest";
 
 type OutgoingResponse = ServerResponse<IncomingMessage> & {
   req: IncomingMessage;
@@ -26,11 +27,13 @@ export class RequestHandler {
     const route = this.routerTree.fetchRoute(req.url as string);
     const formmatted = `${req.method}::${route.path}`;
     if (route.found) {
+      const request = new BlitzRequest(req.socket, route);
       if (this.mode === ServerModes.JSONIFY) {
         // Return json as default
+
         const json = JSON.stringify(
           this.routers[formmatted](
-            req,
+            request,
             Object.setPrototypeOf(res, BlitzResponse.prototype)
           )
         );
@@ -39,7 +42,7 @@ export class RequestHandler {
         return res.end(json);
       } else {
         return this.routers[formmatted](
-          req,
+          request,
           Object.setPrototypeOf(res, BlitzResponse.prototype)
         );
       }

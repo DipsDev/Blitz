@@ -7,7 +7,7 @@
 
 */
 
-interface FetchedRoute {
+export interface FetchedRoute {
   path: string;
   params: string[];
   found: boolean;
