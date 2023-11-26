@@ -25,7 +25,7 @@ class BlitzServer {
     hserv.addListener("request", (rq, rs) => requestHandler.handle(rq, rs));
     hserv.listen(port, () => {
       console.log(
-        `Blitz server is running on port http://localhost:${port} (Ctrl + C to exit process)`
+        `Blitz server is running on http://localhost:${port} (Ctrl + C to exit process)`
       );
 
       if (onListen) {
