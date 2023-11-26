@@ -2,6 +2,14 @@ import path from "node:path";
 import fs from "node:fs";
 
 export class StaticFileHandler {
+  isFileExists(path: string) {
+    return fs.existsSync(path);
+  }
+
+  defaultFallback() {
+    return "<head><title>404 Not Found</title></head><body><h1>404 Not Found</h1></body>";
+  }
+
   renderFileContent(filename: string, data?: Record<string, string>) {
     if (!require.main?.filename) {
       return;
@@ -10,6 +18,9 @@ export class StaticFileHandler {
       filename += ".dhtml";
     }
     const filePath = path.join(require.main?.filename, "../views/", filename);
+    if (!this.isFileExists(filePath)) {
+      return this.defaultFallback();
+    }
     const file = fs.readFileSync(filePath);
 
     if (

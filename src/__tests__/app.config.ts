@@ -14,6 +14,6 @@ app.get("/static/hello", (req, res) => {
   }); // Automatic Load from /static/
 });
 
-app.listen(3000);
+// app.listen(3000);
 
-// export const testServer = app.getTestingServer();
+export const testServer = app.getTestingServer();
