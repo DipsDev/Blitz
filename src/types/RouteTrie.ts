@@ -61,6 +61,7 @@ export class RouteTrie {
         if (!("*" in node.children)) {
           return {
             path: "",
+            params: [],
           };
         }
         params.push(curr);
