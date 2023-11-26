@@ -14,4 +14,6 @@ app.get("/static/hello", (req, res) => {
   }); // Automatic Load from /views/
 });
 
+// app.listen(3000);
+
 export const testServer = app.getTestingServer();

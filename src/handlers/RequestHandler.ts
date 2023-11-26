@@ -1,6 +1,7 @@
 import type { ServerResponse, IncomingMessage } from "http";
 import { RouteHandler, ServerModes } from "../server";
 import BlitzResponse from "../types/BlitzResponse";
+import { StaticFileHandler } from "./StaticFileHandler";
 
 type OutgoingResponse = ServerResponse<IncomingMessage> & {
   req: IncomingMessage;
@@ -42,7 +43,10 @@ export class RequestHandler {
         );
       }
     } else {
-      return res.writeHead(404).end();
+      // Trying to access 404.dhtml
+      const staticFile = new StaticFileHandler();
+      const file = staticFile.renderFileContent("404");
+      return res.writeHead(404).end(file);
     }
   }
 }
