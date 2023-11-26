@@ -16,10 +16,10 @@ describe("Simple http requests", () => {
   it("Should display html file", (done) => {
     request(testServer).get("/static/hello").expect(/blitz/g).expect(200, done);
     request(testServer)
-      .get("/a/b")
+      .get("/firstparam/secondparam")
       .expect(/\/*\/*/g)
-      .expect(/a/g)
-      .expect(/b/g)
+      .expect(/firstparam/g)
+      .expect(/secondparam/g)
       .expect(200, done);
   });
   it("Should display 404 error", (done) => {
