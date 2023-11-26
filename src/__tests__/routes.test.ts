@@ -41,6 +41,7 @@ describe("Route Trie Should Work", () => {
     // check if matches middle placeholders
     expect(trie.routeExists("/b/abc/a")).toBeTruthy();
 
+    // check if the system treats /b/* and /b/*/a different
     expect(trie.routeExists("/b/abc")).toBeFalsy();
     expect(trie.fetchRoute("/b/abc")).toEqual({
       path: "",
@@ -57,10 +58,20 @@ describe("Route Trie Should Work", () => {
     trie.addRoute("/b/*/*/a");
 
     expect(trie.routeExists("/b/a/a/a")).toBeTruthy();
+    expect(trie.routeExists("/b/a/a")).toBeFalsy();
 
     expect(trie.fetchRoute("/b/abc/abc/a")).toEqual({
       path: "/b/*/*/a",
       params: ["abc", "abc"],
+    });
+  });
+  it("Should work with special edge cases", () => {
+    trie.addRoute("/a/*/b");
+
+    expect(trie.routeExists("/a/b")).toBeFalsy();
+    expect(trie.fetchRoute("/a/b")).toEqual({
+      path: "",
+      params: [],
     });
   });
 });
