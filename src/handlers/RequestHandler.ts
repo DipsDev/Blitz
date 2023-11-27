@@ -109,8 +109,9 @@ export class RequestHandler {
 
   handle(req: IncomingMessage, res: OutgoingResponse) {
     const route = this.routerTree.fetchRoute(req.url as string);
+    const formmatted = `${req.method}::${route.path}`;
 
-    if (route.found) {
+    if (route.found && formmatted in this.routers) {
       if (req.method === "GET") {
         return this.handleGetRequest(req, res, route);
       }
