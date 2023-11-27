@@ -103,6 +103,7 @@ export class RequestHandler {
       );
     } catch (err) {
       res.writeHead(500).end("505 Unexpected Error");
+      console.error(err);
       return {};
     }
   }
