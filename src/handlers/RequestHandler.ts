@@ -45,7 +45,8 @@ export class RequestHandler {
       request.body = JSON.parse(body);
       if (self.mode === ServerModes.JSONIFY) {
         const json = JSON.stringify(
-          self.routers[formmatted](
+          self.callRouterCallback(
+            formmatted,
             request,
             Object.setPrototypeOf(res, BlitzResponse.prototype)
           )
@@ -54,7 +55,8 @@ export class RequestHandler {
         res.setHeader("Content-Length", Buffer.byteLength(json));
         return res.end(json);
       } else {
-        return self.routers[formmatted](
+        return self.callRouterCallback(
+          formmatted,
           request,
           Object.setPrototypeOf(res, BlitzResponse.prototype)
         );
@@ -69,10 +71,10 @@ export class RequestHandler {
   ) {
     const request = new BlitzRequest(req.socket, route);
     const formmatted = `${req.method}::${route.path}`;
-
     if (this.mode === ServerModes.JSONIFY) {
       const json = JSON.stringify(
-        this.routers[formmatted](
+        this.callRouterCallback(
+          formmatted,
           request,
           Object.setPrototypeOf(res, BlitzResponse.prototype)
         )
@@ -81,10 +83,27 @@ export class RequestHandler {
       res.setHeader("Content-Length", Buffer.byteLength(json));
       return res.end(json);
     } else {
+      return this.callRouterCallback(
+        formmatted,
+        request,
+        Object.setPrototypeOf(res, BlitzResponse.prototype)
+      );
+    }
+  }
+
+  private callRouterCallback(
+    formmatted: string,
+    request: BlitzRequest,
+    res: OutgoingResponse
+  ) {
+    try {
       return this.routers[formmatted](
         request,
         Object.setPrototypeOf(res, BlitzResponse.prototype)
       );
+    } catch (err) {
+      res.writeHead(500).end("505 Unexpected Error");
+      return {};
     }
   }
 
@@ -92,14 +111,10 @@ export class RequestHandler {
     const route = this.routerTree.fetchRoute(req.url as string);
 
     if (route.found) {
-      try {
-        if (req.method === "GET") {
-          return this.handleGetRequest(req, res, route);
-        }
-        return this.handlePostRequest(req, res, route);
-      } catch (err) {
-        return res.writeHead(500, "505 Unexpected Server Error");
+      if (req.method === "GET") {
+        return this.handleGetRequest(req, res, route);
       }
+      return this.handlePostRequest(req, res, route);
     } else {
       // Trying to access 404.dhtml
       const staticFile = new StaticFileHandler();

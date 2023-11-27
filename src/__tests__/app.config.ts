@@ -25,6 +25,20 @@ app.get("/*/*", (req, res) => {
   });
 });
 
+app.post("/*/*", (req, res) => {
+  return res.json({
+    a: `${req.params[0]}${req.body.shuffix}`,
+    b: `${req.params[1]}${req.body.shuffix}`,
+  });
+});
+
+app.post("/convert-to-number", (req, res) => {
+  console.log(req.body.calculateNumbers()); // no function -> should throw an error 500
+  return res.json({
+    result: Number(req.body.a) / Number(req.body.b),
+  });
+});
+
 app.post("/simple-post", (req, res) => {
   return res.json(req.body);
 });
