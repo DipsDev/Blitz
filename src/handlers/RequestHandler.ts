@@ -2,7 +2,7 @@ import type { ServerResponse, IncomingMessage } from "http";
 import { RouteHandler, ServerModes } from "../server";
 import BlitzResponse from "../types/BlitzResponse";
 import { StaticFileHandler } from "./StaticFileHandler";
-import { RouteTrie } from "../types/RouteTrie";
+import { FetchedRoute, RouteTrie } from "../types/RouteTrie";
 import BlitzRequest from "../types/BlitzRequest";
 
 type OutgoingResponse = ServerResponse<IncomingMessage> & {
@@ -23,16 +23,29 @@ export class RequestHandler {
     this.routerTree = routerTree;
   }
 
-  handle(req: IncomingMessage, res: OutgoingResponse) {
-    const route = this.routerTree.fetchRoute(req.url as string);
+  private handlePostRequest(
+    req: IncomingMessage,
+    res: OutgoingResponse,
+    route: FetchedRoute
+  ) {
+    const request = new BlitzRequest(req.socket, route);
     const formmatted = `${req.method}::${route.path}`;
-    if (route.found) {
-      const request = new BlitzRequest(req.socket, route);
-      if (this.mode === ServerModes.JSONIFY) {
-        // Return json as default
+    const self = this;
 
+    var body = "";
+    req.on("data", function (chunk) {
+      body += chunk;
+    });
+
+    req.on("error", (err) => {
+      return res.writeHead(500, err.message);
+    });
+
+    req.on("end", function () {
+      request.body = JSON.parse(body);
+      if (self.mode === ServerModes.JSONIFY) {
         const json = JSON.stringify(
-          this.routers[formmatted](
+          self.routers[formmatted](
             request,
             Object.setPrototypeOf(res, BlitzResponse.prototype)
           )
@@ -41,10 +54,51 @@ export class RequestHandler {
         res.setHeader("Content-Length", Buffer.byteLength(json));
         return res.end(json);
       } else {
-        return this.routers[formmatted](
+        return self.routers[formmatted](
           request,
           Object.setPrototypeOf(res, BlitzResponse.prototype)
         );
+      }
+    });
+  }
+
+  private handleGetRequest(
+    req: IncomingMessage,
+    res: OutgoingResponse,
+    route: FetchedRoute
+  ) {
+    const request = new BlitzRequest(req.socket, route);
+    const formmatted = `${req.method}::${route.path}`;
+
+    if (this.mode === ServerModes.JSONIFY) {
+      const json = JSON.stringify(
+        this.routers[formmatted](
+          request,
+          Object.setPrototypeOf(res, BlitzResponse.prototype)
+        )
+      );
+      res.setHeader("Content-Type", "application/json");
+      res.setHeader("Content-Length", Buffer.byteLength(json));
+      return res.end(json);
+    } else {
+      return this.routers[formmatted](
+        request,
+        Object.setPrototypeOf(res, BlitzResponse.prototype)
+      );
+    }
+  }
+
+  handle(req: IncomingMessage, res: OutgoingResponse) {
+    const route = this.routerTree.fetchRoute(req.url as string);
+
+    if (route.found) {
+      try {
+        if (req.method === "GET") {
+          return this.handleGetRequest(req, res, route);
+        }
+        return this.handlePostRequest(req, res, route);
+      } catch (err) {
+        return res.writeHead(500, "505 Unexpected Server Error");
       }
     } else {
       // Trying to access 404.dhtml

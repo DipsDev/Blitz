@@ -4,6 +4,7 @@ import { FetchedRoute } from "./RouteTrie";
 export default class BlitzRequest extends IncomingMessage {
   params: string[];
   strictPath: string;
+  body?: any;
   constructor(req: Socket, fetched: FetchedRoute) {
     super(req);
     this.params = fetched.params;

@@ -25,6 +25,10 @@ app.get("/*/*", (req, res) => {
   });
 });
 
+app.post("/simple-post", (req, res) => {
+  return res.json(req.body);
+});
+
 // app.listen(3000);
 
 export const testServer = app.getTestingServer();
