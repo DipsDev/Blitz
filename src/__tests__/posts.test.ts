@@ -53,4 +53,7 @@ describe("POST Request should be handled correctly", () => {
       })
       .expect(500, done);
   });
+  it("Should not be able to access post routes with another request", (done) => {
+    request(testServer).get("/simple-post").expect(404, done);
+  });
 });
