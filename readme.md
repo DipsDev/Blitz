@@ -28,8 +28,8 @@ app.get("/", (req, res) => {
 });
 ```
 
-Blitz will automatically map filename to /views directory, for example.
-`index` will be mapped to `/views/index.dhtml`.
+Blitz will automatically map filename to /views directory, for example.  
+`index` will be mapped to `/views/index.dhtml`.  
 Blitz supports dynamic templates with the extension `dhtml`.
 
 ```html
@@ -49,9 +49,9 @@ Blitz supports dynamic templates with the extension `dhtml`.
 
 where `::bestFramework` will be changed to "blitz".
 
-Blitz now supports dynamic path parameters!
-The following path will be mapped to `/firstparam/secondparam/abc`
-you can access those paramaters through `req.params`
+Blitz now supports dynamic path parameters!  
+The following path will be mapped to `/firstparam/secondparam/abc`  
+you can access those paramaters through `req.params`  
 NOTE: The params aren't sanitised, so use them wisely ( will change soon )
 
 ```js
@@ -65,10 +65,21 @@ app.get("/*/*/abc", (req, res) => {
 });
 ```
 
+Post requests with Blitz are easy too!
+
+```js
+app.post("/posts/*/create", (req, res) => {
+  return res.json(req.body); // Access body with req.body
+  // You can access req.params here too!
+});
+```
+
 ## Upcoming Features
 
 - ~~Usage Section~~
 
-- POST Requests
+- Middleware
+
+- ~~POST Requests~~
 
 - ~~Static File Serving~~
