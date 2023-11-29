@@ -6,8 +6,8 @@ import BlitzRequest from "./types/BlitzRequest";
 
 export type MiddlewareConsumer = (
   req: BlitzRequest,
-  res: OutgoingMessage
-) => any | undefined;
+  res: BlitzResponse
+) => void;
 export type RouteHandler = (req: BlitzRequest, res: BlitzResponse) => any;
 
 export enum ServerModes {

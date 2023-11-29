@@ -2,6 +2,13 @@ import blitz from "../server";
 
 const app = blitz();
 
+app.use((req, res) => {
+  res.setHeader("Web-Server", "blitz");
+  // set the status code as you'd like
+  // res.statusCode = 400;
+  // throw an error with a message!
+});
+
 // Sending JSON
 app.get("/hello", (req, res) => {
   return res.json({

@@ -20,6 +20,9 @@ export default class BlitzResponse<
     this.statusCode = statusCode;
     return this;
   }
+  send(string: string) {
+    return this.end(string);
+  }
   view(filename: string, data?: Record<string, string>) {
     const fileHandler = new StaticFileHandler();
     if (!require.main?.filename) {
