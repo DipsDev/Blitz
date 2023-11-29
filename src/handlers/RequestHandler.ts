@@ -1,5 +1,5 @@
 import type { ServerResponse, IncomingMessage } from "http";
-import { RouteHandler, ServerModes } from "../server";
+import { MiddlewareConsumer, RouteHandler, ServerModes } from "../server";
 import BlitzResponse from "../types/BlitzResponse";
 import { StaticFileHandler } from "./StaticFileHandler";
 import { FetchedRoute, RouteTrie } from "../types/RouteTrie";
@@ -13,35 +13,33 @@ export class RequestHandler {
   private routers: Record<string, RouteHandler>; // GET:Hello
   private mode: ServerModes;
   private routerTree: RouteTrie;
+  private middlewares: MiddlewareConsumer[];
   constructor(
     routers: Record<string, RouteHandler>,
+    middlewares: MiddlewareConsumer[],
     routerTree: RouteTrie,
     mode: ServerModes
   ) {
     this.routers = routers;
+    this.middlewares = middlewares;
     this.mode = mode;
     this.routerTree = routerTree;
   }
 
-  private handlePostRequest(
-    req: IncomingMessage,
-    res: OutgoingResponse,
-    route: FetchedRoute
-  ) {
-    const request = new BlitzRequest(req.socket, route);
-    const formmatted = `${req.method}::${route.path}`;
+  private handlePostRequest(request: BlitzRequest, res: OutgoingResponse) {
+    const formmatted = `${request.method}::${request.strictPath}`;
     const self = this;
 
     var body = "";
-    req.on("data", function (chunk) {
+    request.on("data", function (chunk) {
       body += chunk;
     });
 
-    req.on("error", (err) => {
+    request.on("error", (err) => {
       return res.writeHead(500, err.message);
     });
 
-    req.on("end", function () {
+    request.on("end", function () {
       request.body = JSON.parse(body);
       if (self.mode === ServerModes.JSONIFY) {
         const json = JSON.stringify(
@@ -64,18 +62,13 @@ export class RequestHandler {
     });
   }
 
-  private handleGetRequest(
-    req: IncomingMessage,
-    res: OutgoingResponse,
-    route: FetchedRoute
-  ) {
-    const request = new BlitzRequest(req.socket, route);
-    const formmatted = `${req.method}::${route.path}`;
+  private handleGetRequest(req: BlitzRequest, res: OutgoingResponse) {
+    const formmatted = `${req.method}::${req.strictPath}`;
     if (this.mode === ServerModes.JSONIFY) {
       const json = JSON.stringify(
         this.callRouterCallback(
           formmatted,
-          request,
+          req,
           Object.setPrototypeOf(res, BlitzResponse.prototype)
         )
       );
@@ -85,7 +78,7 @@ export class RequestHandler {
     } else {
       return this.callRouterCallback(
         formmatted,
-        request,
+        req,
         Object.setPrototypeOf(res, BlitzResponse.prototype)
       );
     }
@@ -110,13 +103,21 @@ export class RequestHandler {
 
   handle(req: IncomingMessage, res: OutgoingResponse) {
     const route = this.routerTree.fetchRoute(req.url as string);
+    const request = new BlitzRequest(req, route);
     const formmatted = `${req.method}::${route.path}`;
 
     if (route.found && formmatted in this.routers) {
-      if (req.method === "GET") {
-        return this.handleGetRequest(req, res, route);
+      // call middleware
+      for (const middleware of this.middlewares) {
+        const result = middleware(request, res);
+        if (result) {
+          return result;
+        }
       }
-      return this.handlePostRequest(req, res, route);
+      if (req.method === "GET") {
+        return this.handleGetRequest(request, res);
+      }
+      return this.handlePostRequest(request, res);
     } else {
       // Trying to access 404.dhtml
       const staticFile = new StaticFileHandler();

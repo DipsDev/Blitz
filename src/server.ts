@@ -1,8 +1,13 @@
-import http from "http";
+import http, { OutgoingMessage } from "http";
 import BlitzResponse from "./types/BlitzResponse";
 import { RequestHandler } from "./handlers/RequestHandler";
 import { RouteTrie } from "./types/RouteTrie";
 import BlitzRequest from "./types/BlitzRequest";
+
+export type MiddlewareConsumer = (
+  req: BlitzRequest,
+  res: OutgoingMessage
+) => any | undefined;
 export type RouteHandler = (req: BlitzRequest, res: BlitzResponse) => any;
 
 export enum ServerModes {
@@ -13,10 +18,12 @@ export enum ServerModes {
 class BlitzServer {
   private routers: Record<string, RouteHandler> = {}; // GET:Hello
   private routeTree = new RouteTrie();
+  private middlewares = new Array<MiddlewareConsumer>();
   private mode: ServerModes = ServerModes.NORMAL;
   async listen(port: number, onListen?: () => void) {
     const requestHandler = new RequestHandler(
       this.routers,
+      this.middlewares,
       this.routeTree,
       this.mode
     );
@@ -36,6 +43,7 @@ class BlitzServer {
   getTestingServer() {
     const requestHandler = new RequestHandler(
       this.routers,
+      this.middlewares,
       this.routeTree,
       this.mode
     );
@@ -55,6 +63,10 @@ class BlitzServer {
   async post(route: string, handler: RouteHandler) {
     this.routers[`POST::${route}`] = handler;
     this.routeTree.addRoute(route);
+  }
+
+  use(consumer: MiddlewareConsumer) {
+    this.middlewares.push(consumer);
   }
 }
 

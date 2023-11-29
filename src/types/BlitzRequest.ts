@@ -5,8 +5,10 @@ export default class BlitzRequest extends IncomingMessage {
   params: string[];
   strictPath: string;
   body?: any;
-  constructor(req: Socket, fetched: FetchedRoute) {
-    super(req);
+  method?: string;
+  constructor(req: IncomingMessage, fetched: FetchedRoute) {
+    super(req.socket);
+    this.method = req.method;
     this.params = fetched.params;
     this.strictPath = fetched.path;
   }
